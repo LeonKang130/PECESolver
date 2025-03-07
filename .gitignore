@@ -1,0 +1,8 @@
+# IDE config
+.idea/
+# Build output
+cmake-build-debug/
+cmake-build-release/
+bin/
+# Json files
+*.json
