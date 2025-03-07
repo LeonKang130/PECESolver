@@ -1,39 +1,26 @@
-﻿import json
+﻿import os
+import json
+import argparse
 from matplotlib import pyplot as plt
 
-def plot(data):
+def plot(figure_data, save):
     plt.clf()
-    ts = data["ts"]
-    for i in range(len(data["ys"])):
-        plt.plot(ts, data["ys"][i], label=f"y{i}")
+    for plot_data in figure_data["plots"]:
+        plt.plot(plot_data["xs"], plot_data["ys"], label=plot_data["label"])
+    plt.title(figure_data["title"])
+    plt.grid(True)
     plt.legend()
-    plt.grid(True)
-    plt.title(data["title"])
-    plt.show()
-
-def plot_curve(data):
-    plt.clf()
-    y1, y2 = data["ys"][:2]
-    plt.plot(y1, y2)
-    plt.grid(True)
-    plt.title(data["title"])
-    plt.show()
+    if save:
+        plt.savefig(f"""asset/{figure_data["title"]}.png""")
+    else:
+        plt.show()
 
 if __name__ == '__main__':
-    with open('part-1.json') as f:
-        data = json.load(f)
-    plot(data)
-    with open("part-2-1-1.json") as f:
-        data = json.load(f)
-    plot(data)
-    plot_curve(data)
-    with open("part-2-1-2.json") as f:
-        data = json.load(f)
-    plot(data)
-    plot_curve(data)
-    with open("part-2-2-1.json") as f:
-        data = json.load(f)
-    plot(data)
-    with open("part-2-2-2.json") as f:
-        data = json.load(f)
-    plot(data)
+    parser = argparse.ArgumentParser("plot")
+    parser.add_argument("-s", "--save", help="Save plots as images instead of displaying in GUI", action="store_true")
+    args = parser.parse_args()
+    data_path = "data"
+    for filename in os.listdir(data_path):
+        with open(os.path.join(data_path, filename)) as f:
+            data = json.load(f)
+        plot(data, args.save)

@@ -102,8 +102,39 @@ namespace pece {
     template <int dim>
     static auto MethodOfLines() noexcept {
         auto f1 = [](const float t, const Eigen::Vector<float, dim>& y) noexcept {
-
+            Eigen::Vector<float, dim> f1;
+            f1(0) = 0.0f;
+            for (auto i = 1; i < dim; ++i) {
+                f1(i) = -(y(i) - y(i - 1)) * (dim - 1);
+            }
+            return f1;
         };
+        auto f2 = [](const float t, const Eigen::Vector<float, dim>& y) noexcept {
+            Eigen::Vector<float, dim> f2;
+            f2(0) = 0.0f;
+            for (auto i = 1; i < dim; ++i) {
+                f2(i) = -(y(i) - y(i - 1)) * (dim - 1);
+            }
+            for (auto i = 1; i < dim; ++i) {
+                f2(dim - i) = -(f2(dim - i) - f2(dim - i - 1)) * (dim - 1);
+            }
+            return f2;
+        };
+        auto f3 = [](const float t, const Eigen::Vector<float, dim>& y) noexcept {
+            Eigen::Vector<float, dim> f3;
+            f3(0) = 0.0f;
+            for (auto i = 1; i < dim; ++i) {
+                f3(i) = -(y(i) - y(i - 1)) * (dim - 1);
+            }
+            for (auto i = 1; i < dim; ++i) {
+                f3(dim - i) = -(f3(dim - i) - f3(dim - i - 1)) * (dim - 1);
+            }
+            for (auto i = 1; i < dim; ++i) {
+                f3(dim - i) = -(f3(dim - i) - f3(dim - i - 1)) * (dim - 1);
+            }
+            return f3;
+        };
+        return ODESystem<dim>{f1, f2, f3};
     }
 } // namespace pece
 

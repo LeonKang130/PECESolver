@@ -54,43 +54,45 @@ namespace pece {
         [[nodiscard]] auto Solve(const ODESystem<dim>& ode, const std::span<const float> ts, const StartingValues& sv, float tol) {
             std::vector<Eigen::Vector<float, dim>> ys;
             ys.reserve(ts.size());
+            std::vector<float> hs;
+            hs.reserve(ts.size());
             auto [y_curr, t_curr, h_curr] = sv;
             auto f_curr = ode.F1(t_curr, y_curr);
             // Use forward Euler method to obtain starting values not provided, since the problem is non-stiff
             auto h_prev = std::min(h_curr, std::sqrtf(1.8f * tol / (ode.F2(t_curr, y_curr).norm() + 1e-6f)));
             auto y_prev = y_curr - h_prev * f_curr;
             auto f_prev = ode.F1(t_curr - h_prev, y_prev);
-            spdlog::info("Previous step size: {}", h_prev);
             auto iter = ts.begin();
             while (iter != ts.end()) {
                 while (true) {
                     auto t_next = t_curr + h_curr;
                     // Prediction using 2nd order Adams-Bashforth method
-                    auto y_prediction = y_curr + h_curr * f_prev + 0.5f * h_curr * h_curr * (f_curr - f_prev) / h_prev;
+                    auto y_prediction = y_curr + h_curr * f_curr + 0.5f * h_curr * h_curr / h_prev * (f_curr - f_prev);
                     auto f_prediction = ode.F1(t_next, y_prediction);
                     // Correction using 2nd order Adams-Moulton method
                     auto y_next = y_curr + 0.5f * h_curr * (f_curr + f_prediction);
                     auto f_next = ode.F1(t_next, y_next);
                     // Error estimation using 2nd order Adams-Moulton method
-                    auto error = (ode.F3(t_next, y_next) * h_curr * h_curr * h_curr / 12.0f).norm();
+                    auto error = (h_curr * h_curr * h_curr / 12.0f * ode.F3(t_next, y_next)).norm();
                     if (error < tol) {
                         while (iter != ts.end() && *iter <= t_next) {
                             auto h_star = *iter - t_curr;
-                            ys.emplace_back(y_curr + h_star * f_next + 0.5f * h_star * h_star * (f_next - f_curr) / h_curr);
+                            ys.emplace_back(y_curr + h_star * f_next + 0.5f * h_star * h_star / h_curr * (f_next - f_curr));
+                            hs.emplace_back(h_curr);
                             ++iter;
                         }
                         h_prev = h_curr;
-                        h_curr = h_curr * std::powf(0.9f * tol / error, 1.0f / 3.0f);
+                        h_curr *= error == 0.0f ? 1.0f : std::powf(0.9f * tol / error, 1.0f / 3.0f);
                         f_prev = f_curr;
                         y_curr = y_next;
                         f_curr = f_next;
                         t_curr = t_next;
                         break;
                     }
-                    h_curr = h_curr * std::powf(0.9f * tol / error, 1.0f / 3.0f);
+                    h_curr *= error == 0.0f ? 1.0f : std::powf(0.9f * tol / error, 1.0f / 3.0f);
                 }
             }
-            return _flatten(ys);
+            return std::make_pair(_flatten(ys), hs);
         }
     private:
         [[nodiscard]] static auto _flatten(std::vector<Eigen::Vector<float, dim>> ys) {
