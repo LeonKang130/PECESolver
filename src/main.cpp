@@ -132,7 +132,7 @@ TEST(Part2, Problem2HighAccuracy) {
         .y0 = Eigen::Vector2f{2.0f, 0.0f},
         .t0 = 0.0f,
         .h0 = 0.01f
-    }, 1e-3f);
+    }, 1e-6f);
     pece::Figure figure1{"Part 2 - Van der Pol's (High Accuracy, Solution)"};
     figure1.AddPlot("y1", ts, ys[0]);
     figure1.AddPlot("y2", ts, ys[1]);
