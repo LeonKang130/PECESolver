@@ -37,15 +37,15 @@ For more details please see the implementation of `Solver<dim>::Solve`.
 Suppose the off-step point is located between `t_curr` and `t_next`, we use the following method for interpolation:
 
 $$
-\hat y(t_{n}+h^*)=y_{n}+f_{n}h^*+\frac{(h^{*})^2(f_{n+1}-f_n)}{2h_{n}}
+\hat y(t_{n}+h')=y_{n}+f_{n+1}h'+\frac{(f_{n+1}-f_n)h'^2}{2h_n}
 $$
 
 ### How to estimate the error?
 
-Since the PECE method should have the same LTE as the corrector method, we estimate the error as:
+Since the PECE method should have the same LTE as the corrector method, we estimate the error at $t_{n+1}$ as:
 
 $$
-||\frac1{12}h_n^3y'''(t_n)||_2
+||\frac1{12}h_n^3y'''(t_{n+1})||_2
 $$
 
 If the error estimation is smaller than the error tolerance, the current step would be accepted and ready for interpolation.
