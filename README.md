@@ -55,9 +55,10 @@ If the error estimation is smaller than the error tolerance, the current step wo
 We use the step size anticipated to make the error estimation equal to $0.9\times\mathrm{tol}$ both when choosing the next step size and changing the current step size. In our case, this is
 
 $$
-h_\mathrm{next}=h_\mathrm{curr}(\frac{0.9\times\mathrm{tol}}{||\frac1{12}y'''(t_{curr})h_\mathrm{curr}^3||_2})^{1/3}
+h_\mathrm{next}=h_\mathrm{curr}(\frac{0.9\times\mathrm{tol}}{\hat{\mathrm{err}}})^{1/3}
 $$
 
+When predicting the next step size, we use the error estimation at current step point; when changing the current step size, we use the error estimation at the rejected step point.
 When $||f'''(t_\mathrm{curr})||_2=0$, we keep the step size unchanged for the next step.
 
 ## Usage
