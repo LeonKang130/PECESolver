@@ -10,7 +10,7 @@ This repository contains a simple implementation of a PECE solver using the 2nd-
 - `src/main.cpp`: Solves the problems required by each part of the homework as different testcases.
 - `script/plot.py`: Uses `matplotlib` to plot the data exported by the C++ program.
 
-Third-party libraries are included as git submodules in `extern`. The `data` directory contains the solution and step size data exported as JSON files and `asset` directory contains the corresponding images of the plots.
+Third-party libraries are included as git submodules in `extern`. The `data` directory contains the solution and step size data exported as JSON files and `asset` directory contains the corresponding images of the plots. To build the repository, run `git submodule update --init --recursive` in the root directory to download the dependencies and use `cmake` to build the code. 
 
 ## Implementation Details
 
