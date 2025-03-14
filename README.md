@@ -133,3 +133,7 @@ The solutions with error tolerance set to $1\times10^{-3}$:
 The step sizes used **around each interpolating points** of $t$:
 
 ![](asset/Part%202%20-%20Method%20Of%20Lines%20(High%20Accuracy,%20Step%20Size).png)
+
+## Findings
+
+In the three problem settings, even with different error tolerance, the changes of step size over time share similar patterns, which means that this is related to the properties of the problem (like the values of the solutions and the derivatives).
